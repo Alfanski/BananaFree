@@ -46,6 +46,7 @@ import java.util.HashMap;
 
 public class DialogLauncher {
     private static final String TAG = "DialogLauncher";
+    private static String currentBananaFree = "";
     public static void basicReadWrite(String location, String comment) {
         // [START write_message]
         // Write a message to the database
@@ -310,6 +311,7 @@ public class DialogLauncher {
                                             }
 
                                             routeLayer.clear();
+                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
 
                                             PushpinOptions pOption1 = new PushpinOptions();
                                             pOption1.Icon = Constants.PushpinIcons.Start;
@@ -322,9 +324,23 @@ public class DialogLauncher {
 
                                             for(ItineraryItem item: route.RouteLegs.get(0).ItineraryItems){
                                                 PushpinOptions viaOption = pOption1.clone();
-                                                // TODO: Change Icon according to Firebase
-                                                Log.d("instructions", item.Instruction.Text);
-                                                pOption1.Icon = Constants.PushpinIcons.Start;
+                                                String key = (item.ManeuverPoint.Latitude+"_"+item.ManeuverPoint.Longitude).replace(".", "-");
+                                                DatabaseReference bananaFreeRef = database.getReference("stations/"+key+"/bananaFree");
+                                                currentBananaFree = "";
+                                                bananaFreeRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                                        currentBananaFree = dataSnapshot.getValue(String.class);
+                                                        //do what you want with the email
+
+                                                    }
+
+                                                    @Override
+                                                    public void onCancelled(DatabaseError databaseError) {
+
+                                                    }
+                                                });
+                                                pOption1.Icon = currentBananaFree == null || currentBananaFree == "" ? Constants.PushpinIcons.Question: Boolean.parseBoolean(currentBananaFree) == true ? Constants.PushpinIcons.Access: Constants.PushpinIcons.NOAccess;
                                                 Pushpin viaPushpin = new Pushpin(item.ManeuverPoint, viaOption);
                                                 routeLayer.add(viaPushpin);
                                             }

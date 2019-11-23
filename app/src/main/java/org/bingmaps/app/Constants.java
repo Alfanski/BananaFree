@@ -38,6 +38,8 @@ public class Constants {
 		public static final String RedFlag = "file:///android_asset/pin_red_flag.png";
 		public static final String Access = "file:///android_asset/accessibility.png";
 		public static final String NOAccess = "file:///android_asset/no_access.png";
+		public static final String Question = "file:///android_asset/question-mark.png";
+
 	}
 	
 	public class DataLayers{
