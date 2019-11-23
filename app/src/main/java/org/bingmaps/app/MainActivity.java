@@ -10,6 +10,7 @@ import android.location.LocationListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +45,7 @@ import org.bingmaps.sdk.PushpinOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.bingmaps.app.Constants.PERMISSION_LOCATION_REQUEST_CODE;
@@ -149,9 +151,9 @@ public class MainActivity extends AppCompatActivity {
         // [START write_message]
         // Write a message to the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference myRef = database.getReference("message");
+        DatabaseReference myRef = database.getReference("stations/");
 
-        myRef.setValue("Hello, Lorenzo!");
+        //myRef.setValue("Hello, Lorenzo!");
         // [END write_message]
 
         // [START read_message]
@@ -161,8 +163,25 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                String value = dataSnapshot.getValue(String.class);
-                Log.d(TAG, "Value is: " + value);
+                Iterator value = dataSnapshot.getChildren().iterator();
+                while(value.hasNext()){
+                    DataSnapshot hold =(DataSnapshot)value.next();
+
+                    Log.d(TAG, "Value is: " + value);
+                    //search noch änedern TODO
+                    EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
+                    String[] arr = hold.getKey().split("_");
+                    Coordinate coordinate = new Coordinate(Double.valueOf(arr[0]),Double.valueOf(arr[1]));
+
+                    PushpinOptions po = new PushpinOptions();
+                    po.Icon = Constants.PushpinIcons.End;
+                    po.Width = 20;
+                    po.Height = 35;
+                    po.Anchor = new Point(4, 35);
+                    Pushpin pushPin = new Pushpin(coordinate,po);
+                    bananaLayer.add(pushPin);
+                }
+
             }
 
             @Override

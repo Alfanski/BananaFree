@@ -47,4 +47,5 @@
     <string name="grayscale">Grayscale</string>
     <string name="mercator">Mercator (Blank)</string>
     <string name="report_failure">Report Failure</string>
+    <string name="report">Report</string>
 </resources>

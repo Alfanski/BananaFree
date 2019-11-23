@@ -19,6 +19,12 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import org.bingmaps.bsds.BingSpatialDataService;
 import org.bingmaps.bsds.Record;
 import org.bingmaps.rest.BingMapsRestService;
@@ -39,7 +45,39 @@ import org.bingmaps.sdk.Utilities;
 import java.util.HashMap;
 
 public class DialogLauncher {
+    private static final String TAG = "DialogLauncher";
+    public static void basicReadWrite(String location, String comment) {
+        // [START write_message]
+        // Write a message to the database
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("stations/"+location+"/comment");
 
+        myRef.setValue(comment);
+        myRef = database.getReference("stations/"+location+"/bananaFree");
+        myRef.setValue("false");
+        // [END write_message]
+
+        // [START read_message]
+        // Read from the database
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                String value = dataSnapshot.getKey();
+
+
+                Log.d(TAG, "Value is: " + value);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException());
+            }
+        });
+        // [END read_message]
+    }
     public static void LaunchAboutDialog(final Activity activity) {
         final View aboutView = activity.getLayoutInflater().inflate(R.layout.about, (ViewGroup) activity.findViewById(R.id.aboutView));
 
@@ -106,6 +144,7 @@ public class DialogLauncher {
                                             org.bingmaps.rest.models.Location[] locations = (org.bingmaps.rest.models.Location[]) msg.obj;
 
                                             org.bingmaps.rest.models.Location l = locations[0];
+
                                             if (l.Point != null) {
                                                 EntityLayer searchLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
 
@@ -158,7 +197,7 @@ public class DialogLauncher {
         final View failureView = activity.getLayoutInflater().inflate(R.layout.failure_input, (ViewGroup) activity.findViewById(R.id.failureInputView));
 
         AlertDialog.Builder searchAlert = new AlertDialog.Builder(activity)
-                .setTitle(activity.getString(R.string.search))
+                .setTitle(activity.getString(R.string.report_failure))
                 .setIcon(android.R.drawable.ic_menu_search)
                 .setView(failureView)
                 .setNegativeButton(activity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -166,9 +205,10 @@ public class DialogLauncher {
                         // Canceled. Do nothing
                     }
                 })
-                .setPositiveButton(activity.getString(R.string.search), new DialogInterface.OnClickListener() {
+                .setPositiveButton(activity.getString(R.string.report), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         EditText input = (EditText) failureView.findViewById(R.id.failureStationName);
+
                         String failureText = input.getText().toString().trim();
                         if (!Utilities.isNullOrEmpty(failureText)) {
                             Message viewMsg = new Message();
@@ -182,6 +222,7 @@ public class DialogLauncher {
                                             org.bingmaps.rest.models.Location[] locations = (org.bingmaps.rest.models.Location[]) msg.obj;
 
                                             org.bingmaps.rest.models.Location l = locations[0];
+
                                             if (l.Point != null) {
                                                 EntityLayer searchLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
 
@@ -189,10 +230,12 @@ public class DialogLauncher {
                                                     searchLayer = new EntityLayer(Constants.DataLayers.Search);
                                                 }
 
+                                                EditText comment = (EditText) failureView.findViewById(R.id.failureComment);
+                                                basicReadWrite((l.Point.Latitude+"_"+l.Point.Longitude).replace(".",""),comment.getText().toString().trim());
                                                 searchLayer.clear();
 
                                                 PushpinOptions po = new PushpinOptions();
-                                                po.Icon = Constants.PushpinIcons.RedFlag;
+                                                po.Icon = Constants.PushpinIcons.End;
                                                 po.Width = 20;
                                                 po.Height = 35;
                                                 po.Anchor = new Point(4, 35);
