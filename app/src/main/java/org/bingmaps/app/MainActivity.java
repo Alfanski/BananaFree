@@ -178,7 +178,8 @@ public class MainActivity extends AppCompatActivity {
                     Coordinate coordinate = new Coordinate(Double.valueOf(arr[0]),Double.valueOf(arr[1]));
 
                     PushpinOptions po = new PushpinOptions();
-                    po.Icon = Constants.PushpinIcons.End;
+                    String bananaFree = hold.child("bananaFree").getValue().toString();
+                    po.Icon = Boolean.parseBoolean(bananaFree) == false ? Constants.PushpinIcons.NOAccess: Constants.PushpinIcons.Access;
                     po.Width = 20;
                     po.Height = 35;
                     po.Anchor = new Point(4, 35);

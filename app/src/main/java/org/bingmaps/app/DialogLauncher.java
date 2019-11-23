@@ -234,7 +234,7 @@ public class DialogLauncher {
                                                 basicReadWrite((l.Point.Latitude+"_"+l.Point.Longitude).replace(".","-"),comment.getText().toString().trim());
 
                                                 PushpinOptions po = new PushpinOptions();
-                                                po.Icon = Constants.PushpinIcons.End;
+                                                po.Icon = Constants.PushpinIcons.NOAccess;
                                                 po.Width = 20;
                                                 po.Height = 35;
                                                 po.Anchor = new Point(4, 35);
