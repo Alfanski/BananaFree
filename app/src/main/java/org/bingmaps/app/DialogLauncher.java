@@ -33,10 +33,12 @@ import org.bingmaps.rest.RouteRequest;
 import org.bingmaps.rest.models.ItineraryItem;
 import org.bingmaps.rest.models.Location;
 import org.bingmaps.sdk.BingMapsView;
+import org.bingmaps.sdk.Color;
 import org.bingmaps.sdk.EntityLayer;
 import org.bingmaps.sdk.LocationRect;
 import org.bingmaps.sdk.Point;
 import org.bingmaps.sdk.Polyline;
+import org.bingmaps.sdk.PolylineOptions;
 import org.bingmaps.sdk.Pushpin;
 import org.bingmaps.sdk.PushpinOptions;
 import org.bingmaps.sdk.TileLayer;
@@ -155,8 +157,13 @@ public class DialogLauncher {
 
                                                 searchLayer.clear();
 
+                                                FirebaseDatabase database = FirebaseDatabase.getInstance();
+                                                String key = (l.Point.Latitude+"_"+l.Point.Longitude).replace(".", "-");
+                                                DatabaseReference bananaFreeRef = database.getReference("stations/"+key+"/bananaFree");
+                                                currentBananaFree = "";
+                                                listenToValue(bananaFreeRef);
                                                 PushpinOptions po = new PushpinOptions();
-                                                po.Icon = Constants.PushpinIcons.RedFlag;
+                                                po.Icon = currentBananaFree == null || currentBananaFree == "" ? Constants.PushpinIcons.Question: Boolean.parseBoolean(currentBananaFree) == true ? Constants.PushpinIcons.Access: Constants.PushpinIcons.NOAccess;
                                                 po.Width = 20;
                                                 po.Height = 35;
                                                 po.Anchor = new Point(4, 35);
@@ -221,7 +228,6 @@ public class DialogLauncher {
                                     public void handleMessage(Message msg) {
                                         if (msg.obj != null) {
                                             org.bingmaps.rest.models.Location[] locations = (org.bingmaps.rest.models.Location[]) msg.obj;
-
                                             org.bingmaps.rest.models.Location l = locations[0];
 
                                             if (l.Point != null) {
@@ -273,6 +279,87 @@ public class DialogLauncher {
         searchAlert.show();
     }
 
+    public static void listenToValue(DatabaseReference dbRef){
+        dbRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                currentBananaFree = dataSnapshot.getValue(String.class);
+                //do what you want with the email
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    public static boolean renderRoute(org.bingmaps.rest.models.Route route, int routeIndex, BingMapsView bingMapsView){
+        boolean result = true;
+        EntityLayer routeLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Route);
+        EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Banana);
+
+        if (routeLayer == null) {
+            routeLayer = new EntityLayer(Constants.DataLayers.Route);
+        }
+        if (bananaLayer == null) {
+            bananaLayer = new EntityLayer(Constants.DataLayers.Banana);
+        }
+
+        bananaLayer.clear();
+        routeLayer.clear();
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        PushpinOptions pOption1 = new PushpinOptions();
+        pOption1.Icon = Constants.PushpinIcons.BigStart;
+        pOption1.Width = 43;
+        pOption1.Height = 55;
+        pOption1.Anchor = new Point(20, 36);
+        // pOption1.ZIndex = 1000;
+
+        Pushpin start = new Pushpin(route.RouteLegs.get(0).ActualStart, pOption1);
+        routeLayer.add(start);
+
+        for(ItineraryItem item: route.RouteLegs.get(0).ItineraryItems){
+            PushpinOptions viaOption = pOption1.clone();
+            String key = (item.ManeuverPoint.Latitude+"_"+item.ManeuverPoint.Longitude).replace(".", "-");
+            DatabaseReference bananaFreeRef = database.getReference("stations/"+key+"/bananaFree");
+            currentBananaFree = "";
+            listenToValue(bananaFreeRef);
+            pOption1.Icon = currentBananaFree == null || currentBananaFree == "" ? Constants.PushpinIcons.Question: Boolean.parseBoolean(currentBananaFree) == true ? Constants.PushpinIcons.Access: Constants.PushpinIcons.NOAccess;
+            result = !(currentBananaFree.equals("false"));
+            Pushpin viaPushpin = new Pushpin(item.ManeuverPoint, viaOption);
+            routeLayer.add(viaPushpin);
+        }
+        PushpinOptions pOption2 = pOption1.clone();
+        pOption2.Icon = Constants.PushpinIcons.BigEnd;
+        pOption2.Text = route.RouteLegs.get(0).EndLocation.Name;
+
+        Pushpin end = new Pushpin(route.RouteLegs.get(0).ActualEnd, pOption2);
+        routeLayer.add(end);
+
+                                            /*PolylineOptions polyOptions = new PolylineOptions();
+                                            polyOptions.StrokeColor = new Color((byte) 0, (byte) 0, (byte) 0, (byte) 0 );
+                                            polyOptions.StrokeThickness = 25;*/
+
+        Polyline routeLine = new Polyline(route.RoutePath);
+        // routeLine.Options = polyOptions;
+        routeLayer.add(routeLine);
+
+        bingMapsView.getLayerManager().addLayer(routeLayer);
+        routeLine = null;
+
+        routeLayer.updateLayer();
+
+        if (route.BoundingBox != null) {
+            bingMapsView.setMapView(route.BoundingBox);
+        }
+
+        route = null;
+        return result;
+    }
+
     public static void LaunchDirectionsDialog(final Activity activity, final BingMapsView bingMapsView, final Handler loadingScreenHandler) {
         final View directionsView = activity.getLayoutInflater().inflate(R.layout.directions_input, (ViewGroup) activity.findViewById(R.id.directionsInputView));
 
@@ -303,69 +390,7 @@ public class DialogLauncher {
                                     public void handleMessage(Message msg) {
                                         if (msg.obj != null) {
                                             org.bingmaps.rest.models.Route route = (org.bingmaps.rest.models.Route) msg.obj;
-
-                                            EntityLayer routeLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Route);
-
-                                            if (routeLayer == null) {
-                                                routeLayer = new EntityLayer(Constants.DataLayers.Route);
-                                            }
-
-                                            routeLayer.clear();
-                                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-                                            PushpinOptions pOption1 = new PushpinOptions();
-                                            pOption1.Icon = Constants.PushpinIcons.Start;
-                                            pOption1.Width = 33;
-                                            pOption1.Height = 43;
-                                            pOption1.Anchor = new Point(4, 40);
-
-                                            Pushpin start = new Pushpin(route.RouteLegs.get(0).ActualStart, pOption1);
-                                            routeLayer.add(start);
-
-                                            for(ItineraryItem item: route.RouteLegs.get(0).ItineraryItems){
-                                                PushpinOptions viaOption = pOption1.clone();
-                                                String key = (item.ManeuverPoint.Latitude+"_"+item.ManeuverPoint.Longitude).replace(".", "-");
-                                                DatabaseReference bananaFreeRef = database.getReference("stations/"+key+"/bananaFree");
-                                                currentBananaFree = "";
-                                                bananaFreeRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                                        currentBananaFree = dataSnapshot.getValue(String.class);
-                                                        //do what you want with the email
-
-                                                    }
-
-                                                    @Override
-                                                    public void onCancelled(DatabaseError databaseError) {
-
-                                                    }
-                                                });
-                                                pOption1.Icon = currentBananaFree == null || currentBananaFree == "" ? Constants.PushpinIcons.Question: Boolean.parseBoolean(currentBananaFree) == true ? Constants.PushpinIcons.Access: Constants.PushpinIcons.NOAccess;
-                                                Pushpin viaPushpin = new Pushpin(item.ManeuverPoint, viaOption);
-                                                routeLayer.add(viaPushpin);
-                                            }
-                                            PushpinOptions pOption2 = pOption1.clone();
-                                            pOption2.Icon = Constants.PushpinIcons.End;
-                                            pOption2.Text = route.RouteLegs.get(0).EndLocation.Name;
-
-                                            Pushpin end = new Pushpin(route.RouteLegs.get(0).ActualEnd, pOption2);
-                                            routeLayer.add(end);
-
-                                            Polyline routeLine = new Polyline(route.RoutePath);
-                                            routeLayer.add(routeLine);
-
-                                            bingMapsView.getLayerManager().addLayer(routeLayer);
-                                            routeLine = null;
-
-                                            Log.d("Name",route.RouteLegs.get(0).EndLocation.Name);
-
-                                            routeLayer.updateLayer();
-
-                                            if (route.BoundingBox != null) {
-                                                bingMapsView.setMapView(route.BoundingBox);
-                                            }
-
-                                            route = null;
+                                            boolean bananaFree = renderRoute(route, 0, bingMapsView);
                                             msg.obj = null;
                                         }
 

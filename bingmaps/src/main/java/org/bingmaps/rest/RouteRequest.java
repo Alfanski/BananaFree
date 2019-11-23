@@ -161,6 +161,7 @@ public class RouteRequest {
 			DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 			sb.append("&dt=");
 			sb.append(Utilities.EnodeURLParam(dateFormat.format(_dateTime)));
+			sb.append("&maxSolutions=3");
 			
 			sb.append("&tt=");
 			sb.append(TimeType.toString(_timeType));

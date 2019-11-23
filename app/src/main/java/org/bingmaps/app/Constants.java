@@ -34,6 +34,8 @@ public class Constants {
 	public class PushpinIcons{
 		public static final String Start = "file:///android_asset/startPin.png";
 		public static final String End = "file:///android_asset/endPin.png";
+		public static final String BigEnd = "file:///android_asset/end.png";
+		public static final String BigStart = "file:///android_asset/start.png";
 		public static final String GPS = "file:///android_asset/pin_gps.png";
 		public static final String RedFlag = "file:///android_asset/pin_red_flag.png";
 		public static final String Access = "file:///android_asset/accessibility.png";
