@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "Value is: " + value);
                     //search noch änedern TODO
                     EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
-                    String[] arr = hold.getKey().split("_");
+                    String[] arr = hold.getKey().replace("-",".").split("_");
                     Coordinate coordinate = new Coordinate(Double.valueOf(arr[0]),Double.valueOf(arr[1]));
 
                     PushpinOptions po = new PushpinOptions();
@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
                     po.Anchor = new Point(4, 35);
                     Pushpin pushPin = new Pushpin(coordinate,po);
                     bananaLayer.add(pushPin);
+                    bananaLayer.updateLayer();
                 }
 
             }
