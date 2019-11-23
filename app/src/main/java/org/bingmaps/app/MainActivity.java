@@ -143,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
+        //test
         Initialize();
         basicReadWrite();
     }
