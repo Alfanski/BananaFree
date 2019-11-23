@@ -24,6 +24,8 @@ import org.bingmaps.bsds.Record;
 import org.bingmaps.rest.BingMapsRestService;
 import org.bingmaps.rest.RoutePathOutput;
 import org.bingmaps.rest.RouteRequest;
+import org.bingmaps.rest.models.ItineraryItem;
+import org.bingmaps.rest.models.Location;
 import org.bingmaps.sdk.BingMapsView;
 import org.bingmaps.sdk.EntityLayer;
 import org.bingmaps.sdk.LocationRect;
@@ -276,6 +278,14 @@ public class DialogLauncher {
                                             Pushpin start = new Pushpin(route.RouteLegs.get(0).ActualStart, pOption1);
                                             routeLayer.add(start);
 
+                                            for(ItineraryItem item: route.RouteLegs.get(0).ItineraryItems){
+                                                PushpinOptions viaOption = pOption1.clone();
+                                                // TODO: Change Icon according to Firebase
+                                                Log.d("instructions", item.Instruction.Text);
+                                                pOption1.Icon = Constants.PushpinIcons.Start;
+                                                Pushpin viaPushpin = new Pushpin(item.ManeuverPoint, viaOption);
+                                                routeLayer.add(viaPushpin);
+                                            }
                                             PushpinOptions pOption2 = pOption1.clone();
                                             pOption2.Icon = Constants.PushpinIcons.End;
                                             pOption2.Text = route.RouteLegs.get(0).EndLocation.Name;
