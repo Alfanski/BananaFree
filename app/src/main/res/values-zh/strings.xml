@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">必应地图SDK</string>
+    
+    <string name="app_description">本程序用来演示必应地图安卓SDK的相关功能。此应用程序展示了如何使用该必应地图SDK创建运行于安卓设备的地图应用程序。</string>
+    
+    <string name="loading">加载中</string>
+    
+    <string name="details">详情</string>
+    
+    <!-- Menu text -->
+    <string name="myLocation">我的位置</string>
+	<string name="search">搜索</string>
+	<string name="directions">查询路径</string>
+
+	<string name="more">更多</string>
+	<string name="clearMap">清除图层</string>
+    <string name="about">关于</string>
+    
+    <string name="mapMode">地图模式</string>
+    <string name="auto">自动</string>
+    <string name="road">道路</string>
+    <string name="aerial">航拍</string>
+    <string name="birdseye">鸟瞰</string>
+    <string name="streetSide">街景</string>
+
+    <string name="layers">图层</string>
+    <string name="traffic">交通状况</string>
+    <string name="zoomIn">放大</string>
+    <string name="zoomOut">缩小</string>
+    <string name="ordnanceSurvey">Ordnance Survey(仅限英国)</string>
+    <string name="overrideCulture">覆盖国家设置</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+    <string name="close">关闭</string>
+    <string name="address">地址： </string>
+    <string name="getDirections">查询路径</string>
+    <string name="from">出发</string>
+    <string name="to">到达</string>
+    <string name="enterAddress">输入地址</string>
+    <string name="sampleLang">zh-CN</string>
+    <string name="enterCountryCode">请输入国家代码</string>
+    <string name="culture_mkt_param">覆盖国家设置（mkt参数）</string>
+    <string name="change">更改</string>
+    <string name="canvasDark">深色画布</string>
+    <string name="canvasLight">浅色画布</string>
+    <string name="grayscale">灰度</string>
+    <string name="mercator">墨卡托投影（空白）</string>
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cultureInputView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp">
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/enterCountryCode" />
+
+    <EditText
+        android:id="@+id/cultureInput"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/sampleLang"
+        android:inputType="text"
+        android:maxLength="10"
+        android:maxLines="1" />
+</LinearLayout>

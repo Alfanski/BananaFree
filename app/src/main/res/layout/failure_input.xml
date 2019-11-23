@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/directionsInputView"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="München Hbf" />
+
+        <EditText
+            android:id="@+id/failureStationName"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Aufzug defekt" />
+
+        <EditText
+            android:id="@+id/failureComment"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1" />
+    </LinearLayout>
+</ScrollView>
