@@ -34,6 +34,7 @@ import org.bingmaps.sdk.BingMapsView;
 import org.bingmaps.sdk.Coordinate;
 import org.bingmaps.sdk.EntityClickedListener;
 import org.bingmaps.sdk.EntityLayer;
+import org.bingmaps.sdk.LayerManager;
 import org.bingmaps.sdk.MapLoadedListener;
 import org.bingmaps.sdk.MapMovedListener;
 import org.bingmaps.sdk.MapStyles;
@@ -168,8 +169,11 @@ public class MainActivity extends AppCompatActivity {
                     DataSnapshot hold =(DataSnapshot)value.next();
 
                     Log.d(TAG, "Value is: " + value);
-                    //search noch änedern TODO
-                    EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
+                    EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Banana);
+                    if (bananaLayer == null) {
+                        bananaLayer = new EntityLayer(Constants.DataLayers.Banana);
+                        bingMapsView.getLayerManager().addLayer(bananaLayer);
+                    }
                     String[] arr = hold.getKey().replace("-",".").split("_");
                     Coordinate coordinate = new Coordinate(Double.valueOf(arr[0]),Double.valueOf(arr[1]));
 

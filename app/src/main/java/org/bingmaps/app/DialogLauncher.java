@@ -224,15 +224,14 @@ public class DialogLauncher {
                                             org.bingmaps.rest.models.Location l = locations[0];
 
                                             if (l.Point != null) {
-                                                EntityLayer searchLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
+                                                EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Banana);
 
-                                                if (searchLayer == null) {
-                                                    searchLayer = new EntityLayer(Constants.DataLayers.Search);
+                                                if (bananaLayer == null) {
+                                                    bananaLayer = new EntityLayer(Constants.DataLayers.Banana);
                                                 }
 
                                                 EditText comment = (EditText) failureView.findViewById(R.id.failureComment);
                                                 basicReadWrite((l.Point.Latitude+"_"+l.Point.Longitude).replace(".","-"),comment.getText().toString().trim());
-                                                searchLayer.clear();
 
                                                 PushpinOptions po = new PushpinOptions();
                                                 po.Icon = Constants.PushpinIcons.End;
@@ -241,9 +240,9 @@ public class DialogLauncher {
                                                 po.Anchor = new Point(4, 35);
 
                                                 Pushpin location = new Pushpin(l.Point, po);
-                                                searchLayer.add(location);
-                                                bingMapsView.getLayerManager().addLayer(searchLayer);
-                                                searchLayer.updateLayer();
+                                                bananaLayer.add(location);
+                                                bingMapsView.getLayerManager().addLayer(bananaLayer);
+                                                bananaLayer.updateLayer();
                                                 bingMapsView.setCenterAndZoom(l.Point, Constants.DefaultSearchZoomLevel);
                                                 Message v = new Message();
                                                 v.arg1 = 0;

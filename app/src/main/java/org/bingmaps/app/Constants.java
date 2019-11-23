@@ -42,5 +42,6 @@ public class Constants {
 		public static final String Route = "route";
 		public static final String GPS = "gps";
 		public static final String Search = "search";
+		public static final String Banana = "banana";
 	}
 }
