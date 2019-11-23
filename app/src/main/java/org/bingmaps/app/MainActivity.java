@@ -284,6 +284,13 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
 
+        // Failure Menu Item
+        if (selectedId == R.id.failureMenuBtn) {
+            DialogLauncher.LaunchFailureInputDialog(this, bingMapsView,
+                    loadingScreenHandler);
+            return true;
+        }
+
         if (selectedId == R.id.overrideCultureBtn) {
             DialogLauncher.LaunchOverrideCultureDialog(this, bingMapsView);
             return true;

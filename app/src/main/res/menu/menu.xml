@@ -14,6 +14,11 @@
         android:title="@string/directions" />
 
     <item
+        android:id="@+id/failureMenuBtn"
+        android:icon="@drawable/ic_zoom_in_invert_20dp"
+        android:title="@string/report_failure"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/mapModeMenuBtn"
         android:icon="@android:drawable/ic_menu_mapmode"
         android:title="@string/mapMode">

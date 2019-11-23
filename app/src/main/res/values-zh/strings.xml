@@ -46,4 +46,5 @@
     <string name="canvasLight">浅色画布</string>
     <string name="grayscale">灰度</string>
     <string name="mercator">墨卡托投影（空白）</string>
+    <string name="report_failure">Report Failure</string>
 </resources>

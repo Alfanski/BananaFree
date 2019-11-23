@@ -153,12 +153,12 @@ public class DialogLauncher {
     }
 
     public static void LaunchFailureInputDialog(Activity activity, final BingMapsView bingMapsView, final Handler loadingScreenHandler) {
-        final View searchView = activity.getLayoutInflater().inflate(R.layout.failure_input, (ViewGroup) activity.findViewById(R.id.failureStationName));
+        final View failureView = activity.getLayoutInflater().inflate(R.layout.failure_input, (ViewGroup) activity.findViewById(R.id.failureInputView));
 
         AlertDialog.Builder searchAlert = new AlertDialog.Builder(activity)
                 .setTitle(activity.getString(R.string.search))
                 .setIcon(android.R.drawable.ic_menu_search)
-                .setView(searchView)
+                .setView(failureView)
                 .setNegativeButton(activity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         // Canceled. Do nothing
@@ -166,9 +166,9 @@ public class DialogLauncher {
                 })
                 .setPositiveButton(activity.getString(R.string.search), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        EditText input = (EditText) searchView.findViewById(R.id.searchInput);
-                        String searchText = input.getText().toString().trim();
-                        if (!Utilities.isNullOrEmpty(searchText)) {
+                        EditText input = (EditText) failureView.findViewById(R.id.failureStationName);
+                        String failureText = input.getText().toString().trim();
+                        if (!Utilities.isNullOrEmpty(failureText)) {
                             Message viewMsg = new Message();
                             viewMsg.arg1 = 1;
                             loadingScreenHandler.sendMessage(viewMsg);
@@ -216,7 +216,7 @@ public class DialogLauncher {
                                     }
                                 };
 
-                                bmService.GeocodeAsync(searchText);
+                                bmService.GeocodeAsync(failureText);
                             } catch (Exception e) {
                                 Message v = new Message();
                                 v.arg1 = 0;

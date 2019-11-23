@@ -46,4 +46,5 @@
     <string name="canvasLight">Light Canvas</string>
     <string name="grayscale">Grayscale</string>
     <string name="mercator">Mercator (Blank)</string>
+    <string name="report_failure">Report Failure</string>
 </resources>
