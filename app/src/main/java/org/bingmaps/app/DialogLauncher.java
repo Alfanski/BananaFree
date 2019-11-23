@@ -231,7 +231,7 @@ public class DialogLauncher {
                                                 }
 
                                                 EditText comment = (EditText) failureView.findViewById(R.id.failureComment);
-                                                basicReadWrite((l.Point.Latitude+"_"+l.Point.Longitude).replace(".",""),comment.getText().toString().trim());
+                                                basicReadWrite((l.Point.Latitude+"_"+l.Point.Longitude).replace(".","-"),comment.getText().toString().trim());
                                                 searchLayer.clear();
 
                                                 PushpinOptions po = new PushpinOptions();
