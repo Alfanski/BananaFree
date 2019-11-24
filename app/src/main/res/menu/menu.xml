@@ -19,6 +19,11 @@
         android:title="@string/report_failure"
         app:showAsAction="ifRoom" />
     <item
+        android:id="@+id/accessibleMenuBtn"
+        android:icon="@android:drawable/ic_menu_search"
+        android:title="Confirm Accessibility"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/mapModeMenuBtn"
         android:icon="@android:drawable/ic_menu_mapmode"
         android:title="@string/mapMode">

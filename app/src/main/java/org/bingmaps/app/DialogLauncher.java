@@ -49,7 +49,7 @@ import java.util.HashMap;
 public class DialogLauncher {
     private static final String TAG = "DialogLauncher";
     private static String currentBananaFree = "";
-    public static void basicReadWrite(String location, String comment) {
+    public static void basicReadWrite(String location, boolean bananaFree, String comment) {
         // [START write_message]
         // Write a message to the database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -57,7 +57,7 @@ public class DialogLauncher {
 
         myRef.setValue(comment);
         myRef = database.getReference("stations/"+location+"/bananaFree");
-        myRef.setValue("false");
+        myRef.setValue(""+bananaFree);
         // [END write_message]
 
         // [START read_message]
@@ -151,14 +151,10 @@ public class DialogLauncher {
                                             if (l.Point != null) {
                                                 EntityLayer searchLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
 
-                                                if (searchLayer == null) {
-                                                    searchLayer = new EntityLayer(Constants.DataLayers.Search);
-                                                }
-
-                                                searchLayer.clear();
+                                                clearLayers(bingMapsView);
 
                                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
-                                                String key = (l.Point.Latitude+"_"+l.Point.Longitude).replace(".", "-");
+                                                String key = (l.Point.Latitude+"_"+l.Point.Longitude).replace(".", "p");
                                                 DatabaseReference bananaFreeRef = database.getReference("stations/"+key+"/bananaFree");
                                                 currentBananaFree = "";
                                                 listenToValue(bananaFreeRef);
@@ -232,13 +228,10 @@ public class DialogLauncher {
 
                                             if (l.Point != null) {
                                                 EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Banana);
-
-                                                if (bananaLayer == null) {
-                                                    bananaLayer = new EntityLayer(Constants.DataLayers.Banana);
-                                                }
+                                                clearLayers(bingMapsView);
 
                                                 EditText comment = (EditText) failureView.findViewById(R.id.failureComment);
-                                                basicReadWrite((l.Point.Latitude+"_"+l.Point.Longitude).replace(".","-"),comment.getText().toString().trim());
+                                                basicReadWrite((l.Point.Latitude+"_"+l.Point.Longitude).replace(".","p"), false,comment.getText().toString().trim());
 
                                                 PushpinOptions po = new PushpinOptions();
                                                 po.Icon = Constants.PushpinIcons.NOAccess;
@@ -295,10 +288,10 @@ public class DialogLauncher {
         });
     }
 
-    public static boolean renderRoute(org.bingmaps.rest.models.Route route, int routeIndex, BingMapsView bingMapsView){
-        boolean result = true;
+    public static void clearLayers(BingMapsView bingMapsView){
         EntityLayer routeLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Route);
         EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Banana);
+        EntityLayer searchLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
 
         if (routeLayer == null) {
             routeLayer = new EntityLayer(Constants.DataLayers.Route);
@@ -306,9 +299,20 @@ public class DialogLauncher {
         if (bananaLayer == null) {
             bananaLayer = new EntityLayer(Constants.DataLayers.Banana);
         }
+        if (searchLayer == null) {
+            searchLayer = new EntityLayer(Constants.DataLayers.Search);
+        }
 
         bananaLayer.clear();
         routeLayer.clear();
+        searchLayer.clear();
+    }
+
+    public static boolean renderRoute(org.bingmaps.rest.models.Route route, int routeIndex, BingMapsView bingMapsView){
+        boolean result = true;
+        EntityLayer routeLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Route);
+
+        clearLayers(bingMapsView);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         PushpinOptions pOption1 = new PushpinOptions();
@@ -323,7 +327,7 @@ public class DialogLauncher {
 
         for(ItineraryItem item: route.RouteLegs.get(0).ItineraryItems){
             PushpinOptions viaOption = pOption1.clone();
-            String key = (item.ManeuverPoint.Latitude+"_"+item.ManeuverPoint.Longitude).replace(".", "-");
+            String key = (item.ManeuverPoint.Latitude+"_"+item.ManeuverPoint.Longitude).replace(".", "p");
             DatabaseReference bananaFreeRef = database.getReference("stations/"+key+"/bananaFree");
             currentBananaFree = "";
             listenToValue(bananaFreeRef);
@@ -555,5 +559,77 @@ public class DialogLauncher {
         };
 
         bsds.FindByArea(l.Point, Constants.SearchRadiusKM, null);
+    }
+
+    public static void LaunchAccessibleDialog(Activity activity, final BingMapsView bingMapsView, final Handler loadingScreenHandler) {
+        final View accessibleView = activity.getLayoutInflater().inflate(R.layout.accessible_input, (ViewGroup) activity.findViewById(R.id.accessibleView));
+
+        AlertDialog.Builder accessibleAlert = new AlertDialog.Builder(activity)
+                .setTitle("Confirm Accessibility")
+                .setIcon(android.R.drawable.ic_menu_crop)
+                .setView(accessibleView)
+                .setNegativeButton(activity.getString(R.string.cancel), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        // Canceled. Do nothing
+                    }
+                })
+                .setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        EditText input = (EditText) accessibleView.findViewById(R.id.accessibleInput);
+                        String accessibilityText = input.getText().toString().trim();
+                        if (!Utilities.isNullOrEmpty(accessibilityText)) {
+                            Message viewMsg = new Message();
+                            viewMsg.arg1 = 1;
+                            loadingScreenHandler.sendMessage(viewMsg);
+                            try {
+                                BingMapsRestService bmService = new BingMapsRestService(Constants.BingMapsKey);
+                                bmService.GeocodeAsyncCompleted = new Handler() {
+                                    public void handleMessage(Message msg) {
+                                        if (msg.obj != null) {
+                                            org.bingmaps.rest.models.Location[] locations = (org.bingmaps.rest.models.Location[]) msg.obj;
+                                            org.bingmaps.rest.models.Location l = locations[0];
+
+                                            if (l.Point != null) {
+                                                EntityLayer searchLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
+                                                clearLayers(bingMapsView);
+                                                basicReadWrite((l.Point.Latitude+"_"+l.Point.Longitude).replace(".","p"),true, "");
+
+                                                PushpinOptions po = new PushpinOptions();
+                                                po.Icon = Constants.PushpinIcons.Access;
+                                                po.Width = 20;
+                                                po.Height = 35;
+                                                po.Anchor = new Point(4, 35);
+
+                                                Pushpin location = new Pushpin(l.Point, po);
+                                                searchLayer.add(location);
+                                                bingMapsView.getLayerManager().addLayer(searchLayer);
+                                                searchLayer.updateLayer();
+                                                bingMapsView.setCenterAndZoom(l.Point, Constants.DefaultSearchZoomLevel);
+                                                Message v = new Message();
+                                                v.arg1 = 0;
+                                                loadingScreenHandler.sendMessage(v);
+                                            } else {
+                                                Message v = new Message();
+                                                v.arg1 = 0;
+                                                loadingScreenHandler.sendMessage(v);
+                                            }
+                                        } else {
+                                            Message v = new Message();
+                                            v.arg1 = 0;
+                                            loadingScreenHandler.sendMessage(v);
+                                        }
+                                    }
+                                };
+
+                                bmService.GeocodeAsync(accessibilityText);
+                            } catch (Exception e) {
+                                Message v = new Message();
+                                v.arg1 = 0;
+                                loadingScreenHandler.sendMessage(v);
+                            }
+                        }
+                    }
+                });
+        accessibleAlert.show();
     }
 }

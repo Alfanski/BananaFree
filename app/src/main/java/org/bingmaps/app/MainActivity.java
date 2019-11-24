@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton btnZoomIn;
     private ImageButton btnZoomOut;
     private ImageButton btnMyLocation;
+    private int timesCalled = 0;
 
     public static boolean checkPermission(final Context context) {
         return ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -164,21 +165,36 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
+                timesCalled++;
+                EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Banana);
+                EntityLayer searchLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
+                EntityLayer routeLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Route);
+
+                if (bananaLayer == null) {
+                    bananaLayer = new EntityLayer(Constants.DataLayers.Banana);
+                }
+                if (searchLayer == null) {
+                    searchLayer = new EntityLayer(Constants.DataLayers.Search);
+                }
+                if (routeLayer == null) {
+                    routeLayer = new EntityLayer(Constants.DataLayers.Route);
+                }
+                bananaLayer.clear();
+                routeLayer.clear();
+                searchLayer.clear();
+
                 Iterator value = dataSnapshot.getChildren().iterator();
+                bingMapsView.getLayerManager().addLayer(bananaLayer);
                 while(value.hasNext()){
                     DataSnapshot hold =(DataSnapshot)value.next();
 
-                    Log.d(TAG, "Value is: " + value);
-                    EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Banana);
-                    if (bananaLayer == null) {
-                        bananaLayer = new EntityLayer(Constants.DataLayers.Banana);
-                        bingMapsView.getLayerManager().addLayer(bananaLayer);
-                    }
-                    String[] arr = hold.getKey().replace("-",".").split("_");
-                    Coordinate coordinate = new Coordinate(Double.valueOf(arr[0]),Double.valueOf(arr[1]));
+
+
+                    String[] arr = hold.getKey().replace("p",".").split("_");
+                    Coordinate coordinate = new Coordinate(Double.parseDouble(arr[0]),Double.parseDouble(arr[1]));
 
                     PushpinOptions po = new PushpinOptions();
-                    String bananaFree = hold.child("bananaFree").getValue().toString();
+                    String bananaFree = hold.child("bananaFree").getValue() != null ? hold.child("bananaFree").getValue().toString() : "";
                     po.Icon = Boolean.parseBoolean(bananaFree) == false ? Constants.PushpinIcons.NOAccess: Constants.PushpinIcons.Access;
                     po.Width = 20;
                     po.Height = 35;
@@ -348,6 +364,12 @@ public class MainActivity extends AppCompatActivity {
         // Failure Menu Item
         if (selectedId == R.id.failureMenuBtn) {
             DialogLauncher.LaunchFailureInputDialog(this, bingMapsView,
+                    loadingScreenHandler);
+            return true;
+        }
+
+        if(selectedId == R.id.accessibleMenuBtn){
+            DialogLauncher.LaunchAccessibleDialog(this, bingMapsView,
                     loadingScreenHandler);
             return true;
         }
