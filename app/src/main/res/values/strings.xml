@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Bing Maps SDK</string>
+    <string name="app_name">Banana Free</string>
     
-    <string name="app_description">This application is a demo of the Bing Maps Android SDK in action. Use this application as an example of how to create your own Bing Maps based Android application or create your own using the SDK created by </string>
+    <string name="app_description">This application is the first prototype of the App BananaFree. BananaFree tries to improve the quality of life of disabled people, which are reliant on things like elevators or escalators. It is using the Bing Maps API to provide the best Routes and has a Firebase Database to store the data about accessability.</string>
     
     <string name="loading">Loading</string>
     
@@ -46,6 +46,6 @@
     <string name="canvasLight">Light Canvas</string>
     <string name="grayscale">Grayscale</string>
     <string name="mercator">Mercator (Blank)</string>
-    <string name="report_failure">Report Failure</string>
+    <string name="report_failure">Report Issue</string>
     <string name="report">Report</string>
 </resources>

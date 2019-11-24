@@ -160,7 +160,7 @@ public class DialogLauncher {
                                                 currentBananaFree = "";
                                                 listenToValue(bananaFreeRef);
                                                 PushpinOptions po = new PushpinOptions();
-                                                po.Icon = currentBananaFree == null || currentBananaFree == "" ? Constants.PushpinIcons.Question: Boolean.parseBoolean(currentBananaFree) == true ? Constants.PushpinIcons.Access: Constants.PushpinIcons.NOAccess;
+                                                po.Icon = currentBananaFree == null || currentBananaFree == "" ? Constants.PushpinIcons.Access: Boolean.parseBoolean(currentBananaFree) == true ? Constants.PushpinIcons.Access: Constants.PushpinIcons.NOAccess;
                                                 po.Width = 20;
                                                 po.Height = 35;
                                                 po.Anchor = new Point(4, 35);
@@ -336,7 +336,7 @@ public class DialogLauncher {
             DatabaseReference bananaFreeRef = database.getReference("stations/"+key+"/bananaFree");
             currentBananaFree = "";
             listenToValue(bananaFreeRef);
-            pOption1.Icon = currentBananaFree == null || currentBananaFree == "" ? Constants.PushpinIcons.Question: Boolean.parseBoolean(currentBananaFree) == true ? Constants.PushpinIcons.Access: Constants.PushpinIcons.NOAccess;
+            pOption1.Icon = currentBananaFree == null || currentBananaFree == "" ? Constants.PushpinIcons.Access: Boolean.parseBoolean(currentBananaFree) == true ? Constants.PushpinIcons.Access: Constants.PushpinIcons.NOAccess;
             result = !(currentBananaFree.equals("false"));
             Pushpin viaPushpin = new Pushpin(item.ManeuverPoint, viaOption);
             routeLayer.add(viaPushpin);
