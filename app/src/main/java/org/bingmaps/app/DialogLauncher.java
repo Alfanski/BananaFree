@@ -149,9 +149,10 @@ public class DialogLauncher {
                                             org.bingmaps.rest.models.Location l = locations[0];
 
                                             if (l.Point != null) {
+                                                clearLayers(bingMapsView);
                                                 EntityLayer searchLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
 
-                                                clearLayers(bingMapsView);
+
 
                                                 FirebaseDatabase database = FirebaseDatabase.getInstance();
                                                 String key = (l.Point.Latitude+"_"+l.Point.Longitude).replace(".", "p");
@@ -227,8 +228,9 @@ public class DialogLauncher {
                                             org.bingmaps.rest.models.Location l = locations[0];
 
                                             if (l.Point != null) {
-                                                EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Banana);
                                                 clearLayers(bingMapsView);
+                                                EntityLayer bananaLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Banana);
+
 
                                                 EditText comment = (EditText) failureView.findViewById(R.id.failureComment);
                                                 basicReadWrite((l.Point.Latitude+"_"+l.Point.Longitude).replace(".","p"), false,comment.getText().toString().trim());
@@ -295,12 +297,15 @@ public class DialogLauncher {
 
         if (routeLayer == null) {
             routeLayer = new EntityLayer(Constants.DataLayers.Route);
+            bingMapsView.getLayerManager().addLayer(routeLayer);
         }
         if (bananaLayer == null) {
             bananaLayer = new EntityLayer(Constants.DataLayers.Banana);
+            bingMapsView.getLayerManager().addLayer(bananaLayer);
         }
         if (searchLayer == null) {
             searchLayer = new EntityLayer(Constants.DataLayers.Search);
+            bingMapsView.getLayerManager().addLayer(searchLayer);
         }
 
         bananaLayer.clear();
@@ -310,9 +315,9 @@ public class DialogLauncher {
 
     public static boolean renderRoute(org.bingmaps.rest.models.Route route, int routeIndex, BingMapsView bingMapsView){
         boolean result = true;
-        EntityLayer routeLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Route);
 
         clearLayers(bingMapsView);
+        EntityLayer routeLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Route);
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         PushpinOptions pOption1 = new PushpinOptions();
@@ -590,8 +595,9 @@ public class DialogLauncher {
                                             org.bingmaps.rest.models.Location l = locations[0];
 
                                             if (l.Point != null) {
-                                                EntityLayer searchLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
                                                 clearLayers(bingMapsView);
+                                                EntityLayer searchLayer = (EntityLayer) bingMapsView.getLayerManager().getLayerByName(Constants.DataLayers.Search);
+
                                                 basicReadWrite((l.Point.Latitude+"_"+l.Point.Longitude).replace(".","p"),true, "");
 
                                                 PushpinOptions po = new PushpinOptions();
